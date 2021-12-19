@@ -113,9 +113,11 @@ func main() {
 				fmt.Println("It's a tie!")
 				break
 			}
-		}
 
-		player = switchPlayer(player)
+			player = switchPlayer(player)
+		} else {
+			fmt.Println("Invalid move. Please try again.")
+		}
 	}
 	printBoard(board)
 }
