@@ -71,14 +71,6 @@ func switchPlayer(player string) string {
 	}
 	return "X"
 }
-// Repeat
-// End game
-// Print winner
-// Print tie
-// Print board
-// Ask to play again
-// If yes, repeat
-// If no, end
 
 // Scan the board to see if a player has won
 func checkWin(board [][]string, player string) bool {
@@ -114,12 +106,14 @@ func main() {
 		if isValidMove(board, row, col) {
 			board := makeMove(board, row, col, player)
 			if checkWin(board, player) {
+				fmt.Printf("\nCongratulations! Player %s wins!\n", player)
 				break
 			} else if isFull(board) {
+				fmt.Println("It's a tie!")
 				break
 			}
 		}
-		
+
 		player = switchPlayer(player)
 	}
 }
