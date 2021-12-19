@@ -34,7 +34,7 @@ func printBoard(board [][]string) {
 func getMove(board [][]string) (int, int) {
 	var row, col int
 	fmt.Print("Enter your next move: ")
-	fmt.Scanf("%d %d", &row, &col)
+	fmt.Scanf("%d %d\r", &row, &col)
 	return row - 1, col - 1
 }
 
@@ -101,6 +101,7 @@ func main() {
 	// Main game loop
 	for {
 		printBoard(board)
+		fmt.Printf("\nPlayer %s's turn\n", player)
 		row, col := getMove(board)
 
 		if isValidMove(board, row, col) {
@@ -116,4 +117,5 @@ func main() {
 
 		player = switchPlayer(player)
 	}
+	printBoard(board)
 }
