@@ -93,31 +93,142 @@ func checkWin(board [][]string, player string) bool {
 	return false
 }
 
-func main() {
-	welcome()
-	board := initBoard()
-	player := "X"
-
-	// Main game loop
-	for {
-		printBoard(board)
-		fmt.Printf("\nPlayer %s's turn\n", player)
-		row, col := getMove(board)
-
-		if isValidMove(board, row, col) {
-			board := makeMove(board, row, col, player)
-			if checkWin(board, player) {
-				fmt.Printf("\nCongratulations! Player %s wins!\n", player)
-				break
-			} else if isFull(board) {
-				fmt.Println("It's a tie!")
-				break
+// Computer move
+func computerMove(board [][] string) (int, int) {
+	chkBoard := board
+	// Check for winning or blocking move
+	for i := 0; i < len(chkBoard); i++ {
+		for j := 0; j < len(chkBoard[i]); j++ {
+			// If the space is empty, check if it's a winning move
+			if chkBoard[i][j] == "_" {
+				// Assign the space to the computer
+				chkBoard[i][j] = "O"
+				// Check if the computer has won
+				if checkWin(chkBoard, "O") {
+					// If the computer has won, return the move
+					return i, j
+				}
+				// If the computer has not won, assign the space to the player
+				chkBoard[i][j] = "X"
+				// Check if the player wins
+				if checkWin(chkBoard, "X") {
+					// If the wins, return the move to block the player
+					return i, j
+				}
+				// If the player does not win, remove the space
+				chkBoard[i][j] = "_"
 			}
-
-			player = switchPlayer(player)
-		} else {
-			fmt.Println("Invalid move. Please try again.")
 		}
 	}
+	// Check for corner move
+	if chkBoard[0][0] == "_" {
+		return 0, 0
+	}
+	if chkBoard[0][2] == "_" {
+		return 0, 2
+	}
+	if chkBoard[2][0] == "_" {
+		return 2, 0
+	}
+	if chkBoard[2][2] == "_" {
+		return 2, 2
+	}
+	// Check for center move
+	if chkBoard[1][1] == "_" {
+		return 1, 1
+	}
+	// Return first possible move other than the corners and the center
+	for i := 0; i < len(chkBoard); i++ {
+		for j := 0; j < len(chkBoard[i]); j++ {
+			if chkBoard[i][j] == "_" {
+				return i, j
+			}
+		}
+	}
+	
+	// If no possible move (shouldn't get to this point, but compiler complains) return an invalid move (-1, -1)
+	return -1, -1
+}
+
+// Main loop for Player vs Player
+func pvp() {
+	board := initBoard()
+	player := "X"
+	for {
+		printBoard(board)
+		row, col := getMove(board)
+		if isValidMove(board, row, col) {
+			board = makeMove(board, row, col, player)
+		} else {
+			fmt.Println("Invalid move, try again.")
+			continue
+		}
+		if checkWin(board, player) {
+			printBoard(board)
+			fmt.Printf("%s wins!\n", player)
+			break
+		} else if isFull(board) {
+			printBoard(board)
+			fmt.Println("It's a tie!")
+			break
+		}
+		player = switchPlayer(player)
+	}
 	printBoard(board)
+}
+
+// Game loop for Player vs Computer
+func pvc() {
+	board := initBoard()
+	player := "X"
+	turn := player
+
+	for {
+		printBoard(board)
+		if turn == player {
+			row, col := getMove(board)
+			if isValidMove(board, row, col) {
+				board = makeMove(board, row, col, player)
+			} else {
+				fmt.Println("Invalid move, try again.")
+				continue
+			}
+		} else {
+			row, col := computerMove(board)
+			board = makeMove(board, row, col, player)
+		}
+		if checkWin(board, player) {
+			printBoard(board)
+			fmt.Printf("%s wins!\n", player)
+			break
+		} else if isFull(board) {
+			printBoard(board)
+			fmt.Println("It's a tie!")
+			break
+		}
+		player = switchPlayer(player)
+	}
+	printBoard(board)
+}
+
+func main() {
+	welcome()
+
+	fmt.Println("1. Player vs Player")
+	fmt.Println("2. Player vs Computer")
+	fmt.Println("3. Quit")
+	fmt.Print("Enter your choice: ")
+	var choice int
+	fmt.Scanf("%d\r", &choice)
+
+	switch choice {
+		case 1:
+			pvp()
+		case 2:
+			pvc()
+		case 3:
+			fmt.Println("Goodbye!")
+		default:
+			fmt.Println("Invalid choice, try again.")
+	}
 }
